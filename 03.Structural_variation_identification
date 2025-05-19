@@ -1,0 +1,6 @@
+nucmer --mum --mincluster=1000 --prefix=A_B A.fasta B.fasta
+###Filtering
+delta-filter -m -i 90 -l 100 A_B.delta > A_B.delta.filtered
+show-coords -THrd A_B.delta.filtered > A_B.delta.filtered.coords
+###Syri
+syri  -c A_B.delta.filtered.coords -r A.fasta -q B.fasta -d A_B.delta --all --no-chrmatch
