@@ -1,0 +1,29 @@
+1. Sequence analysis
+for i in ../Single_Copy_Orthologue_Sequences/*.fa
+    do 
+	 muscle -align $i -output $i.out
+         seqkit sort $i.out >$i.sort
+         seqkit seq $i.sort -w 0 >$i.line 
+done
+
+2. Merge single cope gene
+paste ../Single_Copy_Orthologue_Sequences/*.line >merge.fa   
+
+3. Change the sequence IDs to species names
+
+4. cp ~/03-muxu/01-treei/data1/OrthoFinder/Results_Nov03/r8s/trans-phy.py ./
+    python trans-phy.py
+
+5. prottest predict the Tree model
+/share/home/software/software/jdk1.8.0_181/bin/java -jar /share/home/software/software/prottest-3.4.2/prottest-3.4.2.jar -all-distributions -i merge-rename.fa.phy -F -DT -tc 0.5 -threads 20 -o prottest.out
+
+6. RAxML
+/share/home/zhengxinyuan/software/standard-RAxML-8.2.12/raxmlHPC-PTHREADS-AVX -T 10 -f a -x 12345 -p 12345 -N 100 -m PROTGAMMAIJTTF -o Taes-A,Taes-B,Taes-D -n species.tree -s merge-rename.fa.phy
+
+7. r8s
+python3 cafe_script/cafetutorial_prep_r8s.py -i RAxML_bestTree.species.tree -o r8s_ctl_file.txt -s 39468 -p 'Arabidopsis_thaliana,Oryza_sativa' -c '160'
+### first cv
+r8s -b -f r8s_ctl_file.txt >r8s_tmp.txt
+### second set smoothing
+r8s -b -f r8s_ctl_file2.txt >r8s_tmp2.txt
+tail -n 1 r8s_tmp2.txt | cut -c 16- >r8s_ultrametric.txt
