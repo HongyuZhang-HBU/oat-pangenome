@@ -1,0 +1,34 @@
+#Input file
+#Vcf file
+vcf="" 
+#File prefix (used to name output files)
+pre="" 
+#Add the plink command to the environment variableexport PATH= 
+#Plink converts file formats
+plink --vcf $vcf \
+	--recode \
+	--out $pre \
+	--allow-extra-chr 
+plink --file $pre \
+	--make-bed \
+	--out $pre \
+--allow-extra-chr 
+
+
+#Phenotype file
+phenotype="" 
+#The converted VCF file format
+bfile="" 
+#The path of the gemma command
+gemma="" 
+#Run command
+$gemma -bfile $bfile \
+	-gk 2 \
+	-p ${phenotype}.txt \
+	-o ${phenotype} 
+$gemma -bfile $bfile \
+	-k output/${phenotype}.sXX.txt \
+	-lmm 4 \
+	-p ${phenotype}.txt \
+	-o ${phenotype} 
+awk '{print $3,$1,$3,$13}' output/${phenotype}.assoc.txt > ${phenotype}_plot.txt 
